@@ -86,4 +86,25 @@ object snake extends MillIndigo with TpolecatModule with ScalafmtModule {
 
   }
 
+  def publishGame() = T.command {
+    val docs = os.pwd / "docs"
+
+    if (os.exists(docs)) {
+      os.remove.all(docs)
+    }
+
+    os.makeDir.all(docs)
+
+    val outPath = os.pwd / "docs"
+    os.makeDir.all(outPath)
+
+    val buildDir = os.pwd / "out" / "snake" / "indigoBuildFull.dest"
+
+    os.list(buildDir)
+      .toList
+      .foreach { p =>
+        os.copy(p, outPath / p.last)
+      }
+  }
+
 }
