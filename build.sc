@@ -8,7 +8,7 @@ import mill.scalajslib.api._
 import mill.scalalib.scalafmt._
 import coursier.maven.MavenRepository
 
-import $ivy.`io.indigoengine::mill-indigo:0.15.0`, millindigo._
+import $ivy.`io.indigoengine::mill-indigo:0.15.1`, millindigo._
 
 import $ivy.`io.github.davidgregory084::mill-tpolecat::0.3.5`
 import io.github.davidgregory084.TpolecatModule
@@ -29,8 +29,7 @@ object snake extends MillIndigo with TpolecatModule with ScalafmtModule {
       }
 
   val indigoGenerators: IndigoGenerators =
-    IndigoGenerators
-      .mill("snake.generated")
+    IndigoGenerators("snake.generated")
       .listAssets("Assets", indigoOptions.assets)
       .generateConfig("SnakeConfig", indigoOptions)
 
@@ -66,7 +65,7 @@ object snake extends MillIndigo with TpolecatModule with ScalafmtModule {
     }
   }
 
-  val indigoVersion = "0.15.0"
+  val indigoVersion = "0.15.1"
 
   def ivyDeps = Agg(
     ivy"io.indigoengine::indigo-json-circe::$indigoVersion",
