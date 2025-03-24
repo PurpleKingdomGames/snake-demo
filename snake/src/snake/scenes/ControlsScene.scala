@@ -23,7 +23,7 @@ object ControlsScene extends Scene[StartupData, GameModel, ViewModel]:
     EventFilters.Restricted
       .withViewModelFilter(_ => None)
 
-  val subSystems: Set[SubSystem] =
+  val subSystems: Set[SubSystem[GameModel]] =
     Set()
 
   def updateModel(
@@ -34,7 +34,7 @@ object ControlsScene extends Scene[StartupData, GameModel, ViewModel]:
       Outcome(controlScheme)
         .addGlobalEvents(SceneEvent.JumpTo(GameScene.name))
 
-    case KeyboardEvent.KeyUp(Key.UP_ARROW) | KeyboardEvent.KeyUp(Key.DOWN_ARROW) =>
+    case KeyboardEvent.KeyUp(Key.ARROW_UP) | KeyboardEvent.KeyUp(Key.ARROW_DOWN) =>
       Outcome(controlScheme.swap)
 
     case _ =>
@@ -58,28 +58,32 @@ object ControlsScene extends Scene[StartupData, GameModel, ViewModel]:
 
       SceneUpdateFragment.empty
         .addLayer(
-          Layer(
-            BindingKey("ui"),
+          LayerKey("ui") -> Layer(
             drawControlsText(24, verticalMiddle, sceneModel) ++
               Batch(drawSelectText(horizontalCenter)) ++
-              SharedElements.drawHitSpaceToStart(horizontalCenter, Seconds(1), context.gameTime)
+              SharedElements.drawHitSpaceToStart(horizontalCenter, Seconds(1), context.frame.time)
           )
         )
     }
 
   def drawControlsText(center: Int, middle: Int, controlScheme: ControlScheme): Batch[SceneNode] =
     Batch(
-      Text("select controls", center, middle - 20, 1, GameAssets.fontKey, GameAssets.fontMaterial).alignLeft
+      Text("select controls", center, middle - 20, GameAssets.fontKey, GameAssets.fontMaterial).alignLeft
     ) ++ {
       controlScheme match
         case ControlScheme.Turning(_, _) =>
           Batch(
-            Text("[_] direction (all arrow keys)", center, middle - 5, 1, GameAssets.fontKey, GameAssets.fontMaterial).alignLeft,
+            Text(
+              "[_] direction (all arrow keys)",
+              center,
+              middle - 5,
+              GameAssets.fontKey,
+              GameAssets.fontMaterial
+            ).alignLeft,
             Text(
               "[x] turn (left and right arrows)",
               center,
               middle + 10,
-              1,
               GameAssets.fontKey,
               GameAssets.fontMaterial
             ).alignLeft
@@ -87,12 +91,17 @@ object ControlsScene extends Scene[StartupData, GameModel, ViewModel]:
 
         case ControlScheme.Directed(_, _, _, _) =>
           Batch(
-            Text("[x] direction (all arrow keys)", center, middle - 5, 1, GameAssets.fontKey, GameAssets.fontMaterial).alignLeft,
+            Text(
+              "[x] direction (all arrow keys)",
+              center,
+              middle - 5,
+              GameAssets.fontKey,
+              GameAssets.fontMaterial
+            ).alignLeft,
             Text(
               "[_] turn (left and right arrows)",
               center,
               middle + 10,
-              1,
               GameAssets.fontKey,
               GameAssets.fontMaterial
             ).alignLeft
@@ -101,4 +110,4 @@ object ControlsScene extends Scene[StartupData, GameModel, ViewModel]:
     }
 
   def drawSelectText(center: Int): SceneNode =
-    Text("Up / Down arrows to select.", center, 205, 1, GameAssets.fontKey, GameAssets.fontMaterial).alignCenter
+    Text("Up / Down arrows to select.", center, 205, GameAssets.fontKey, GameAssets.fontMaterial).alignCenter

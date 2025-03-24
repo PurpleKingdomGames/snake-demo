@@ -27,7 +27,7 @@ object StartScene extends Scene[StartupData, GameModel, ViewModel]:
     EventFilters.Restricted
       .withViewModelFilter(_ => None)
 
-  val subSystems: Set[SubSystem] =
+  val subSystems: Set[SubSystem[GameModel]] =
     Set()
 
   def updateModel(
@@ -63,10 +63,9 @@ object StartScene extends Scene[StartupData, GameModel, ViewModel]:
 
       SceneUpdateFragment.empty
         .addLayer(
-          Layer(
-            BindingKey("ui"),
+          LayerKey("ui") -> Layer(
             drawTitleText(horizontalCenter, verticalMiddle) ++
-              SharedElements.drawHitSpaceToStart(horizontalCenter, Seconds(1), context.gameTime)
+              SharedElements.drawHitSpaceToStart(horizontalCenter, Seconds(1), context.frame.time)
           )
         )
         .withAudio(
@@ -76,14 +75,13 @@ object StartScene extends Scene[StartupData, GameModel, ViewModel]:
 
   def drawTitleText(center: Int, middle: Int): Batch[SceneNode] =
     Batch(
-      Text("snake!", center, middle - 20, 1, GameAssets.fontKey, GameAssets.fontMaterial).alignCenter,
+      Text("snake!", center, middle - 20, GameAssets.fontKey, GameAssets.fontMaterial).alignCenter,
       Text(
         "presented in glorious 1 bit graphics",
         center,
         middle - 5,
-        1,
         GameAssets.fontKey,
         GameAssets.fontMaterial
       ).alignCenter,
-      Text("Made by Dave", center, middle + 10, 1, GameAssets.fontKey, GameAssets.fontMaterial).alignCenter
+      Text("Made by Dave", center, middle + 10, GameAssets.fontKey, GameAssets.fontMaterial).alignCenter
     )

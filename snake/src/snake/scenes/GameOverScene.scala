@@ -23,7 +23,7 @@ object GameOverScene extends Scene[StartupData, GameModel, ViewModel]:
     EventFilters.Restricted
       .withViewModelFilter(_ => None)
 
-  val subSystems: Set[SubSystem] =
+  val subSystems: Set[SubSystem[GameModel]] =
     Set()
 
   def updateModel(context: SceneContext[StartupData], pointsScored: Int): GlobalEvent => Outcome[Int] = {
@@ -53,18 +53,28 @@ object GameOverScene extends Scene[StartupData, GameModel, ViewModel]:
 
       SceneUpdateFragment.empty
         .addLayer(
-          Layer(
-            BindingKey("ui"),
-            Text("Game Over!", horizontalCenter, verticalMiddle - 20, 1, GameAssets.fontKey, GameAssets.fontMaterial).alignCenter,
+          LayerKey("ui") -> Layer(
+            Text(
+              "Game Over!",
+              horizontalCenter,
+              verticalMiddle - 20,
+              GameAssets.fontKey,
+              GameAssets.fontMaterial
+            ).alignCenter,
             Text(
               s"You scored: ${pointsScored.toString()} pts!",
               horizontalCenter,
               verticalMiddle - 5,
-              1,
               GameAssets.fontKey,
               GameAssets.fontMaterial
             ).alignCenter,
-            Text("(hit space to restart)", horizontalCenter, 220, 1, GameAssets.fontKey, GameAssets.fontMaterial).alignCenter
+            Text(
+              "(hit space to restart)",
+              horizontalCenter,
+              220,
+              GameAssets.fontKey,
+              GameAssets.fontMaterial
+            ).alignCenter
           )
         )
     }

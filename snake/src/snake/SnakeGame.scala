@@ -4,6 +4,8 @@ import indigo.*
 import indigo.scenes.*
 import indigoextras.subsystems.FPSCounter
 
+import snake.generated.Assets
+
 import snake.model.{ControlScheme, GameModel, ViewModel}
 import snake.init.{GameAssets, StartupData, ViewConfig}
 import snake.scenes.{ControlsScene, GameOverScene, GameScene, StartScene}
@@ -21,7 +23,7 @@ object SnakeGame extends IndigoGame[ViewConfig, StartupData, GameModel, ViewMode
   val eventFilters: EventFilters =
     EventFilters.Restricted
 
-  def boot(flags: Map[String, String]): Outcome[BootResult[ViewConfig]] =
+  def boot(flags: Map[String, String]): Outcome[BootResult[ViewConfig, GameModel]] =
     Outcome {
       val viewConfig: ViewConfig =
         ViewConfig.default
@@ -38,7 +40,7 @@ object SnakeGame extends IndigoGame[ViewConfig, StartupData, GameModel, ViewMode
         .withAssets(GameAssets.assets(assetPath))
         .withFonts(GameAssets.fontInfo)
         .withSubSystems(
-          Set(FPSCounter(Point(5, 5), BindingKey("fps")))
+          Set(FPSCounter(Point(5, 5), GameAssets.fontKey, Assets.assets.boxyFontSmall, LayerKey("fps")))
         )
     }
 
@@ -51,7 +53,7 @@ object SnakeGame extends IndigoGame[ViewConfig, StartupData, GameModel, ViewMode
   def setup(viewConfig: ViewConfig, assetCollection: AssetCollection, dice: Dice): Outcome[Startup[StartupData]] =
     StartupData.initialise(viewConfig)
 
-  def updateModel(context: FrameContext[StartupData], model: GameModel): GlobalEvent => Outcome[GameModel] = {
+  def updateModel(context: Context[StartupData], model: GameModel): GlobalEvent => Outcome[GameModel] = {
     case GameReset =>
       Outcome(GameModel.initialModel(context.startUpData.viewConfig.gridSize, model.controlScheme))
 
@@ -60,23 +62,24 @@ object SnakeGame extends IndigoGame[ViewConfig, StartupData, GameModel, ViewMode
   }
 
   def updateViewModel(
-      context: FrameContext[StartupData],
+      context: Context[StartupData],
       model: GameModel,
       viewModel: ViewModel
   ): GlobalEvent => Outcome[ViewModel] =
     _ => Outcome(viewModel)
 
   def present(
-      context: FrameContext[StartupData],
+      context: Context[StartupData],
       model: GameModel,
       viewModel: ViewModel
   ): Outcome[SceneUpdateFragment] =
     Outcome(
-      SceneUpdateFragment.empty
-        .addLayer(Layer(BindingKey("game")))
-        .addLayer(Layer(BindingKey("score")))
-        .addLayer(Layer(BindingKey("ui")))
-        .addLayer(Layer(BindingKey("fps")))
+      SceneUpdateFragment(
+        LayerKey("game")  -> Layer.empty,
+        LayerKey("score") -> Layer.empty,
+        LayerKey("ui")    -> Layer.empty,
+        LayerKey("fps")   -> Layer.empty
+      )
     )
 
 case object GameReset extends GlobalEvent
