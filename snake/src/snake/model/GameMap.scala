@@ -1,33 +1,31 @@
 package snake.model
 
-import indigo.Dice
-import indigo.Batch
-import indigo.BoundingBox
-import indigoextras.trees.QuadTree
-import indigo.Vertex
+import indigo.*
 import scala.annotation.tailrec
 
-final case class GameMap(quadTree: QuadTree[MapElement], gridSize: BoundingBox):
+final case class GameMap(quadTree: QuadTree[Vertex, MapElement], gridSize: BoundingBox):
+
+  given opts: QuadTree.InsertOptions = QuadTree.DefaultOptions
 
   def fetchElementAt(gridPoint: Vertex): Option[MapElement] =
-    quadTree.fetchElementAt(gridPoint)
+    quadTree.searchAt(gridPoint).headOption.map(_._2)
 
   def insertApple(element: MapElement.Apple): GameMap =
-    this.copy(quadTree = quadTree.insertElement(element, element.gridPoint).prune)
+    this.copy(quadTree = quadTree.insert(element.gridPoint, element).prune)
 
   def removeApple(gridPoint: Vertex): GameMap =
-    this.copy(quadTree = quadTree.removeElement(gridPoint).prune)
+    this.copy(quadTree = quadTree.removeAt(gridPoint).prune)
 
   def insertElements(elements: List[MapElement]): GameMap =
     this.copy(
-      quadTree = quadTree.insertElements(Batch.fromList(elements).map(me => (me, me.giveGridPoint))).prune
+      quadTree = quadTree.insert(Batch.fromList(elements).map(me => (me.giveGridPoint, me))).prune
     )
 
   def findEmptySpace(dice: Dice, not: List[Vertex]): Vertex =
     GameMap.findEmptySpace(quadTree, dice, gridSize, not)
 
   def asElementList: List[MapElement] =
-    quadTree.toBatch.toList
+    quadTree.toBatch.map(_._2).toList
 
   lazy val findWalls: List[MapElement.Wall] =
     asElementList.flatMap {
@@ -50,9 +48,9 @@ final case class GameMap(quadTree: QuadTree[MapElement], gridSize: BoundingBox):
 object GameMap:
 
   def apply(gridSize: BoundingBox): GameMap =
-    GameMap(QuadTree.empty[MapElement](gridSize.size), gridSize)
+    GameMap(QuadTree.empty[Vertex, MapElement](gridSize.size), gridSize)
 
-  def findEmptySpace[T](quadTree: QuadTree[T], dice: Dice, gridSize: BoundingBox, not: List[Vertex])(using
+  def findEmptySpace[T](quadTree: QuadTree[Vertex, T], dice: Dice, gridSize: BoundingBox, not: List[Vertex])(using
       CanEqual[T, T]
   ): Vertex =
 
@@ -69,7 +67,7 @@ object GameMap:
 
     @tailrec
     def rec(pt: Vertex): Vertex =
-      quadTree.fetchElementAt(pt) match {
+      quadTree.searchAt(pt).headOption match {
         case None if !not.contains(pt) =>
           pt
 

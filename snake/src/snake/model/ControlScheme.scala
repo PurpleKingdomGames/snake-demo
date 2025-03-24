@@ -9,8 +9,8 @@ enum ControlScheme:
   case Directed(up: Key, down: Key, left: Key, right: Key) extends ControlScheme
 
 object ControlScheme:
-  val turningKeys: Turning   = Turning(Key.LEFT_ARROW, Key.RIGHT_ARROW)
-  val directedKeys: Directed = Directed(Key.UP_ARROW, Key.DOWN_ARROW, Key.LEFT_ARROW, Key.RIGHT_ARROW)
+  val turningKeys: Turning   = Turning(Key.ARROW_LEFT, Key.ARROW_RIGHT)
+  val directedKeys: Directed = Directed(Key.ARROW_UP, Key.ARROW_DOWN, Key.ARROW_LEFT, Key.ARROW_RIGHT)
 
   extension (cs: ControlScheme)
     def instructSnake(keyboardEvent: KeyboardEvent, snake: Snake, currentDirection: SnakeDirection): Snake =

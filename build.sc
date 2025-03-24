@@ -1,21 +1,15 @@
-import scala.util.Success
-import scala.util.Try
 import $ivy.`com.lihaoyi::mill-contrib-bloop:$MILL_VERSION`
 import mill._
 import mill.scalalib._
 import mill.scalajslib._
 import mill.scalajslib.api._
 import mill.scalalib.scalafmt._
-import coursier.maven.MavenRepository
 
-import $ivy.`io.indigoengine::mill-indigo:0.15.2`, millindigo._
+import $ivy.`io.indigoengine::mill-indigo:0.19.0`, millindigo._
 
-import $ivy.`io.github.davidgregory084::mill-tpolecat::0.3.5`
-import io.github.davidgregory084.TpolecatModule
-
-object snake extends MillIndigo with TpolecatModule with ScalafmtModule {
-  def scalaVersion   = "3.3.1"
-  def scalaJSVersion = "1.14.0"
+object snake extends MillIndigo with ScalafmtModule {
+  def scalaVersion   = "3.6.2"
+  def scalaJSVersion = "1.18.2"
 
   val indigoOptions: IndigoOptions =
     IndigoOptions.defaults
@@ -33,39 +27,7 @@ object snake extends MillIndigo with TpolecatModule with ScalafmtModule {
       .listAssets("Assets", indigoOptions.assets)
       .generateConfig("SnakeConfig", indigoOptions)
 
-  def buildGame() = T.command {
-    T {
-      compile()
-      fastLinkJS()
-      indigoBuild()()
-    }
-  }
-
-  def buildGameFull() = T.command {
-    T {
-      compile()
-      fullLinkJS()
-      indigoBuildFull()()
-    }
-  }
-
-  def runGame() = T.command {
-    T {
-      compile()
-      fastLinkJS()
-      indigoRun()()
-    }
-  }
-
-  def runGameFull() = T.command {
-    T {
-      compile()
-      fullLinkJS()
-      indigoRunFull()()
-    }
-  }
-
-  val indigoVersion = "0.15.2"
+  val indigoVersion = "0.19.0"
 
   def ivyDeps = Agg(
     ivy"io.indigoengine::indigo-json-circe::$indigoVersion",
@@ -76,7 +38,7 @@ object snake extends MillIndigo with TpolecatModule with ScalafmtModule {
   object test extends ScalaJSTests {
 
     def ivyDeps = Agg(
-      ivy"org.scalameta::munit::0.7.29"
+      ivy"org.scalameta::munit::1.1.0"
     )
 
     def testFramework = "munit.Framework"
@@ -85,8 +47,15 @@ object snake extends MillIndigo with TpolecatModule with ScalafmtModule {
 
   }
 
+  // This is the root directory of the workspace / project.
+  private val workspaceDir: os.Path =
+    sys.env
+      .get("MILL_WORKSPACE_ROOT")
+      .map(os.Path(_))
+      .getOrElse(os.pwd)
+
   def publishGame() = T.command {
-    val docs = os.pwd / "docs"
+    val docs = workspaceDir / "docs"
 
     if (os.exists(docs)) {
       os.remove.all(docs)
@@ -94,10 +63,10 @@ object snake extends MillIndigo with TpolecatModule with ScalafmtModule {
 
     os.makeDir.all(docs)
 
-    val outPath = os.pwd / "docs"
+    val outPath = workspaceDir / "docs"
     os.makeDir.all(outPath)
 
-    val buildDir = os.pwd / "out" / "snake" / "indigoBuildFull.dest"
+    val buildDir = workspaceDir / "out" / "snake" / "indigoBuildFull.dest"
 
     os.list(buildDir)
       .toList

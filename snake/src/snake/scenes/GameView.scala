@@ -7,12 +7,16 @@ import snake.model.GameModel
 
 object GameView:
 
-  def update(viewConfig: ViewConfig, model: GameModel, walls: Group, staticAssets: StaticAssets): Outcome[SceneUpdateFragment] =
+  def update(
+      viewConfig: ViewConfig,
+      model: GameModel,
+      walls: Group,
+      staticAssets: StaticAssets
+  ): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment.empty
         .addLayer(
-          Layer(
-            BindingKey("game"),
+          LayerKey("game") -> Layer(
             gameLayer(
               viewConfig,
               model,
@@ -34,13 +38,13 @@ object GameView:
       drawSnake(viewConfig, currentState, staticAssets.snake) ++
       drawScore(viewConfig, currentState.score)
 
-  def drawApple(viewConfig: ViewConfig, gameMap: GameMap, staticAssets: StaticAssets): Batch[Graphic[_]] =
+  def drawApple(viewConfig: ViewConfig, gameMap: GameMap, staticAssets: StaticAssets): Batch[Graphic[?]] =
     Batch.fromList(gameMap.findApples).map { a =>
       staticAssets.apple
         .moveTo(gridPointToPoint(a.gridPoint, gameMap.gridSize, viewConfig.gridSquareSize))
     }
 
-  def drawSnake(viewConfig: ViewConfig, currentState: GameModel, snakeAsset: Graphic[_]): Batch[Graphic[_]] =
+  def drawSnake(viewConfig: ViewConfig, currentState: GameModel, snakeAsset: Graphic[?]): Batch[Graphic[?]] =
     Batch.fromList(currentState.snake.givePath).map { pt =>
       snakeAsset.moveTo(gridPointToPoint(pt, currentState.gameMap.gridSize, viewConfig.gridSquareSize))
     }
@@ -51,7 +55,6 @@ object GameView:
         score.toString,
         (viewConfig.viewport.width / viewConfig.magnificationLevel) - 3,
         (viewConfig.viewport.height / viewConfig.magnificationLevel) - viewConfig.footerHeight + 21,
-        1,
         GameAssets.fontKey,
         GameAssets.fontMaterial
       ).alignRight

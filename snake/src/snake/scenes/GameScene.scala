@@ -24,11 +24,11 @@ object GameScene extends Scene[StartupData, GameModel, ViewModel]:
     EventFilters.Restricted
       .withViewModelFilter(_ => None)
 
-  val subSystems: Set[SubSystem] =
+  val subSystems: Set[SubSystem[GameModel]] =
     Set(Score.automataSubSystem(GameModel.ScoreIncrement.toString(), GameAssets.fontKey))
 
   def updateModel(context: SceneContext[StartupData], gameModel: GameModel): GlobalEvent => Outcome[GameModel] =
-    gameModel.update(context.gameTime, context.dice, context.startUpData.viewConfig.gridSquareSize)
+    gameModel.update(context.frame.time, context.frame.dice, context.startUpData.viewConfig.gridSquareSize)
 
   def updateViewModel(
       context: SceneContext[StartupData],

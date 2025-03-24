@@ -6,14 +6,14 @@ import snake.generated.Assets
 object GameAssets:
 
   def apple(blockSize: Int): Graphic[Material.Bitmap] =
-    Graphic(0, 0, blockSize, blockSize, 2, Assets.assets.snakeMaterial)
+    Graphic(0, 0, blockSize, blockSize, Assets.assets.snakeMaterial)
       .withCrop(blockSize, 0, blockSize, blockSize)
 
   def snake(blockSize: Int): Graphic[Material.Bitmap] =
-    Graphic(0, 0, blockSize, blockSize, 2, Assets.assets.snakeMaterial)
+    Graphic(0, 0, blockSize, blockSize, Assets.assets.snakeMaterial)
 
   def wall(blockSize: Int): Graphic[Material.Bitmap] =
-    Graphic(0, 0, blockSize, blockSize, 2, Assets.assets.snakeMaterial)
+    Graphic(0, 0, blockSize, blockSize, Assets.assets.snakeMaterial)
       .withCrop(blockSize * 2, 0, blockSize, blockSize)
 
   def assets(baseUrl: String): Set[AssetType] =

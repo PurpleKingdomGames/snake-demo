@@ -3,20 +3,21 @@ package snake
 import indigo.*
 import indigoextras.subsystems.*
 import snake.init.GameAssets
+import snake.model.GameModel
 
 object Score:
 
   val poolKey: AutomataPoolKey =
     AutomataPoolKey("points")
 
-  def automataSubSystem(scoreAmount: String, fontKey: FontKey): Automata =
+  def automataSubSystem(scoreAmount: String, fontKey: FontKey): Automata[GameModel] =
     Automata(
       poolKey,
       Automaton(
-        AutomatonNode.Fixed(Text(scoreAmount, 0, 0, 1, fontKey, GameAssets.fontMaterial).alignCenter),
+        AutomatonNode.Fixed(Text(scoreAmount, 0, 0, fontKey, GameAssets.fontMaterial).alignCenter),
         Seconds(1.5)
       ).withModifier(ModiferFunctions.signal),
-      BindingKey("score")
+      LayerKey("score")
     )
 
   val spawnEvent: Point => AutomataEvent =
