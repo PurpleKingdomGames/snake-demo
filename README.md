@@ -1,3 +1,5 @@
+> This repo has been archived, but the code lives on at: https://indigoengine.io/
+
 # Snake Demo
 
 Play now! [https://purplekingdomgames.github.io/snake-demo/](https://purplekingdomgames.github.io/snake-demo/)
